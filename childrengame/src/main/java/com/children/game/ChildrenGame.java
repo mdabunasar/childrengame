@@ -1,73 +1,70 @@
 package com.children.game;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ChildrenGame {
+	static int counter = 0;
+	static int startingChild = 2;
+	
 	public static void main(String args[]) {
-
-		int n = 10;
-		int k = 2;
-
-		ArrayList<String> children = new ArrayList<String>();
-
-		for(int i=1; i< (n+1); i++) {
-			children.add("Child"+i);
-		}
-
-		//children.forEach(child -> System.out.println(child));
-
 		ChildrenGame childrenGame = new ChildrenGame();
-
-		childrenGame.removeKChild(children);
-
-
-
+		childrenGame.childrenGame(20, 127);
 	}
+	
+	public void childrenGame(int numberOfChildren, int gameShout) {
+		Map<String, String> children = initilizeChildren(numberOfChildren);
 
-	public void removeKChild(ArrayList<String> children) {
-		ArrayList<String> originalList = children;
-		ArrayList<String> newList = children;
-		
-		
-		int k=3;
-		int i = 0;
+		playGame(children, gameShout);
+	}
+	
+	public Map<String, String> playGame(Map<String, String> children, int shout){
 
-		for(int j=0; j < originalList.size(); j++)
-		{
-			i = i +1;
-			System.out.println("Shout "+i);
-
-			if(i==k) {
-				System.out.println("Before: "+newList);
-				System.out.println("Removing: "+newList.remove(j));
-				//i=0;
-				System.out.println("A"
-						+ "fter: "+newList);
-				//j = j -1;
-			}
-			
-			if(j == (originalList.size() - 1)) {
-				System.out.println(originalList.size());
-				originalList = newList;
-			}
+		if(children.size() == 1) {
+			System.out.println("Winner: "+children);
+			return children;
 		}
+
+		Set<String> keySet = children.keySet();
+		
+		keySet.forEach(child -> {
+			counter++;
+			if(counter!=shout && !children.get(child).equals("shout")) {
+				children.put(child, "shout");
+			}else if(counter==shout && !children.get(child).equals("remove")) {
+				children.put(child, "remove");
+				counter=0;
+			}
+		});
+				
+		return playGame(removeAndReturn(children), shout);
 	}
 
-	public void removeKChild1(ArrayList<String> children) {
-		int k=3;
-		int i = 0;
+	public Map<String, String> removeAndReturn(Map<String, String> children){
+		
+		System.out.println("Size of children before removing "+children.size());
+		children.forEach((k, v) -> System.out.println(k+" : "+v));
+		
+		Map<String, String> newChildren= new LinkedHashMap<>();
+		
+		Set<String> keySet = children.keySet();
+		
+		keySet.forEach(child -> {
+			if(!children.get(child).equals("remove"))
+				newChildren.put(child, children.get(child));
+		});
+		
+		return newChildren;
+	}
+		
+		
+	public static Map<String, String> initilizeChildren(int numberOfChildren) {
+		Map<String, String> children = new LinkedHashMap<>();
 
-		do {
-			
-			for(int j=0; j < children.size(); j++) {
-				i++;
-
-				if(i==k) {
-					System.out.println("Removing: "+children.remove(j));
-					System.out.println(children);
-					i=0;
-				}	
-			}
-		}while(children.size() == 1);
+		for(int i=1; i<=numberOfChildren; i++)
+			children.put("Child"+i, "NotShout");
+		
+		return children;
 	}
 }
